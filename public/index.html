@@ -224,6 +224,26 @@
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(120px); background: var(--ink-strong); color: #fff; padding: 12px 20px; border-radius: 99px; transition: transform .25s ease, opacity .25s ease; z-index: 10; font-size: .95rem; opacity: 0; visibility: hidden; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
 
+  /* KI-Türchen */
+  .ai-list { display: grid; gap: 10px; margin-top: 16px; }
+  .ai-door { border: 2px solid var(--line); border-radius: 14px; background: #fff; }
+  .ai-door.has { border-color: var(--blush); }
+  .ai-door[open] { border-color: var(--taupe); }
+  .ai-door summary { list-style: none; cursor: pointer; display: flex; gap: 12px; align-items: center; padding: 10px 12px; }
+  .ai-door summary::-webkit-details-marker { display: none; }
+  .ai-door summary .num { width: 38px; height: 38px; border-radius: 10px; background: var(--blush); display: grid; place-items: center; font-family: var(--font-head); color: var(--ink-strong); flex: none; }
+  .ai-door.has summary .num { background: var(--pink); }
+  .ai-door .sum-txt { display: flex; flex-direction: column; min-width: 0; }
+  .ai-door .sum-txt b { color: var(--ink-strong); }
+  .ai-door .sum-txt small { color: var(--muted); font-size: .88rem; }
+  .ai-body { padding: 0 14px 14px; }
+  .ai-body .field { margin: 10px 0; }
+  .ai-body textarea { min-height: 0; font-size: .98rem; }
+  .ai-hint { font-size: .92rem; color: var(--muted); margin-top: 14px; }
+  .ai-progress { display: flex; align-items: center; gap: 10px; margin: 12px 0 8px; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid var(--blush); border-top-color: var(--ink-strong); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -3px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   footer.site { max-width: 1040px; margin: 0 auto; padding: 0 16px 40px; text-align: center; color: var(--muted); font-size: .88rem; }
   footer.site .script { font-size: 2rem; display: block; }
 
@@ -273,11 +293,12 @@
 <script>
 /* =========================================================
    KONFIGURATION
-   ZUGANGSCODE: leer lassen = frei zugänglich.
-   Mit Code (z. B. "ADVENT26") müssen Käufer:innen ihn einmalig
-   eingeben – den Code verschickst du in der Tentary-Bestätigungsmail.
+   Die gültigen Zugangscodes stehen NICHT hier, sondern in Netlify
+   in der Umgebungsvariable ACCESS_CODES (durch Komma getrennt).
+   Den Code verschickst du in der Tentary-Bestätigungsmail.
    ========================================================= */
-const ZUGANGSCODE = "";
+const ZUGANGSCODE_PFLICHT = true;
+const API_URL = "/api/generate";
 const STORAGE_KEY = "yh-adventskompass-v1";
 
 /* ---------- Inhalte ---------- */
@@ -342,6 +363,12 @@ const KANAELE = [
   { v: "blog", ico: "🎧", label: "Blog oder Podcast", ideas: ["Hinweis-Box in deinen meistgelesenen Artikeln", "Kurze Erwähnung in jeder Folge bis zum Start"] },
   { v: "koop", ico: "🤝", label: "Kooperationen mit Business-Buddies", ideas: ["Gast-Türchen gegen gegenseitiges Teilen", "Gemeinsames Live zum Kalenderstart"] },
   { v: "ads", ico: "📣", label: "Bezahlte Anzeigen (Meta Ads)", ideas: ["Kleines Budget für eine Anzeige auf die Landingpage", "Retargeting auf Menschen, die dein Profil schon kennen"] }
+];
+
+const VERSAND = [
+  { v: "email", ico: "📬", label: "Per E-Mail", desc: "Jede Anmeldung landet auf deiner Liste, die Türchen verschickt dein Newsletter-Tool automatisch." },
+  { v: "email_insta", ico: "💌", label: "Per E-Mail + Instagram-Stories als Vorgeschmack", desc: "Der Inhalt kommt per Mail, die Stories machen neugierig und bringen neue Anmeldungen." },
+  { v: "insta", ico: "📸", label: "Nur auf Instagram", desc: "Ohne Anmeldung – mehr Reichweite, aber keine neuen Kontakte auf deiner Liste." }
 ];
 
 const ALLTAG = [
@@ -457,6 +484,12 @@ const STEPS = [
     title: "Wie oft öffnet sich ein Türchen?",
     lead: "Denk an deinen Alltag UND den deiner Zielgruppe."
   },
+  {
+    id: "versand", chapter: "Technik & Sichtbarkeit", kind: "single", key: "versand", options: VERSAND,
+    title: "Wie bekommen deine Teilnehmer:innen ihre Türchen?",
+    lead: "Davon hängt ab, was die KI später für dich schreibt: Mail-Texte, Story-Texte oder beides.",
+    note: { cls: "pink", title: "Unsere Empfehlung: E-Mail + Stories", html: "Deine Follower gehören Instagram – deine E-Mail-Liste gehört dir. Mit E-Mail als Kern gewinnst du Kontakte, die du nach Weihnachten wieder erreichst. Die Stories sind dein Schaufenster und holen neue Anmeldungen." }
+  },
   { id: "technik", chapter: "Technik & Sichtbarkeit", kind: "technik" },
   {
     id: "kanaele", chapter: "Technik & Sichtbarkeit", kind: "multi", key: "kanaele", options: KANAELE, min: 1,
@@ -480,7 +513,7 @@ const STEPS = [
 ];
 
 /* ---------- State ---------- */
-function freshState() { return { step: 0, a: { technik: {}, nebenziele: [], inhalte: [], kanaele: [], vcheck: [] }, checks: {}, doors: {}, todos: {}, unlocked: false }; }
+function freshState() { return { step: 0, a: { technik: {}, nebenziele: [], inhalte: [], kanaele: [], vcheck: [] }, checks: {}, doors: {}, todos: {}, ai: {}, aiPlan: null, unlocked: false, code: "" }; }
 function load() {
   try { const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); if (s && s.a) return Object.assign(freshState(), s); } catch (e) {}
   return null;
@@ -628,12 +661,21 @@ function renderGate() {
     <span class="eyebrow">Willkommen</span>
     <h1>Dein Zugang</h1>
     <p>Bitte gib den Zugangscode aus deiner Kaufbestätigung ein.</p>
-    <form id="gate"><div class="field"><label for="code" class="sr">Zugangscode</label><input type="text" id="code" autocomplete="off" placeholder="Zugangscode"></div>
+    <form id="gate"><div class="field"><label for="code">Zugangscode</label><input type="text" id="code" autocomplete="off" placeholder="Zugangscode"></div>
     <button class="btn pink" type="submit">Los geht's</button></form></section>`;
-  document.getElementById("gate").addEventListener("submit", e => {
+  document.getElementById("gate").addEventListener("submit", async e => {
     e.preventDefault();
-    if (document.getElementById("code").value.trim().toUpperCase() === ZUGANGSCODE.toUpperCase()) { state.unlocked = true; save(); render(); }
-    else toast("Der Code passt leider nicht. Schau nochmal in deine Bestätigungsmail.");
+    const btn = e.target.querySelector("button");
+    const code = document.getElementById("code").value.trim();
+    if (!code) return;
+    btn.disabled = true;
+    try {
+      await api({ mode: "check" }, code);
+      state.unlocked = true; state.code = code; save(); render();
+    } catch (err) {
+      toast(err.message);
+      btn.disabled = false;
+    }
   });
 }
 
@@ -645,6 +687,7 @@ function renderIntro() {
     <p class="lead">Ein Adventskalender ist eins der schönsten Marketing-Geschenke, die du deiner Community machen kannst – wenn er zu deinem Business passt und wirklich fertig wird. Genau dabei begleitet dich dieser Kompass.</p>
     <ul class="bullets">
       <li>In ca. 20 Minuten zu Ziel, Ergebnis-Versprechen und Titel</li>
+      <li>Die KI schreibt dir die Inhalte für jedes Türchen – Mail-Text, Betreff, Mini-Aufgabe und Story</li>
       <li>Dein persönlicher Türchen-Fahrplan mit echten Kalenderdaten</li>
       <li>Zeitplan bis zum Start + Social-Media-Promo-Plan</li>
       <li>Kleine Wissens-Checks, damit du typische Fehler vermeidest</li>
@@ -770,8 +813,9 @@ function buildTips(doors) {
     bindung: ["💛 Mach es exklusiv: persönliche Ansprache, kleine Überraschungen, ein ehrliches Danke. In der letzten Woche passt eine Bitte um Feedback oder ein Testimonial."],
     umsatz: ["🛍️ Tägliche Angebote funktionieren vor allem mit Produkten. Bei Dienstleistungen lieber Mehrwert-Türchen plus ein Angebot an ausgewählten Tagen."]
   })[a.ziel || "leads"].forEach(x => t.push(x));
+  if (a.versand === "insta") t.push("📸 Nur auf Instagram erreichst du nur die Menschen, die der Algorithmus zufällig ausspielt – und du gewinnst keine Kontakte für die Zeit nach Weihnachten. Überleg, ob du die Türchen nicht doch per Mail verschickst und Instagram als Schaufenster nutzt.");
   const tech = a.technik || {};
-  if (tech.newsletterTool !== "ja") t.push("🛠️ Ohne E-Mail-Marketing-Tool geht es nicht. Entscheide dich zuerst für ein Tool – erst dann lohnt sich Landingpage und Automation.");
+  if (a.versand !== "insta" && tech.newsletterTool !== "ja") t.push("🛠️ Ohne E-Mail-Marketing-Tool geht es nicht. Entscheide dich zuerst für ein Tool – erst dann lohnt sich Landingpage und Automation.");
   if (tech.doi !== "ja") t.push("🔐 Denk an das Double-Opt-in: Es ist in Deutschland Pflicht für Newsletter-Anmeldungen und schützt deine Liste vor Fake-Adressen.");
   if ((a.kanaele || []).includes("koop") || (a.inhalte || []).includes("gast")) t.push("🤝 Frag zwei bis drei Business-Buddies nach Gast-Türchen – sie teilen den Kalender dann auch mit ihrer Community.");
   t.push("🌱 Fang klein an: Ein persönlicher Kalender mit Herz schlägt einen perfekten Kalender, der nie fertig wird. Ausbauen kannst du im nächsten Jahr.");
@@ -877,6 +921,8 @@ function renderResult() {
     </article>`).join("")}</div>
   </section>
 
+  <section class="section" id="ai-section">${aiSectionHtml(doors)}</section>
+
   <section class="section">
     <h2>📆 Dein Zeitplan bis zum Start</h2>
     <p>Hake ab, was erledigt ist. Termine, die schon vorbei sind, sind mit <strong>Jetzt</strong> markiert.</p>
@@ -923,6 +969,8 @@ function planAsText() {
   buildTimeline(doors).forEach(x => lines.push(`[${(state.todos[x.id] != null ? state.todos[x.id] : x.done) ? "x" : " "}] ${fmt(x.d)} – ${x.what}`));
   lines.push("", "EMPFEHLUNGEN");
   buildTips(doors).forEach(t => lines.push("• " + t));
+  const ai = aiAllText();
+  if (ai) lines.push("", "TÜRCHEN-INHALTE", "", ai);
   return lines.join("\n");
 }
 
@@ -935,8 +983,183 @@ async function copyText(txt, msg) {
   }
 }
 
+/* ---------- KI-Türchen-Generator ---------- */
+const BATCH_SIZE = 4;
+const PARALLEL = 3;
+let aiBusy = false;
+const aiLoading = new Set();
+
+async function api(payload, code = state.code) {
+  let res;
+  try {
+    res = await fetch(API_URL, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...payload, code }) });
+  } catch (e) {
+    throw new Error("Keine Verbindung. Bitte prüfe dein Internet und versuche es noch einmal.");
+  }
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  if (res.status === 401) { state.unlocked = false; save(); }
+  if (!res.ok) throw new Error(data.error || "Die KI ist gerade nicht erreichbar. Bitte versuche es gleich noch einmal.");
+  return data;
+}
+
+function aiProfile() {
+  const a = A(), lbl = (list, v) => (list.find(x => x.v === v) || {}).label || "";
+  return {
+    "Angebot": a.angebot, "Zielgruppe": a.zielgruppe, "Wo die Wunschkundin heute steht": a.vorher, "Wo sie nach der Zusammenarbeit steht": a.nachher,
+    "Hauptziel des Kalenders": lbl(ZIELE, a.ziel), "Nebenziele": (a.nebenziele || []).map(v => lbl(ZIELE, v)),
+    "Alltag der Zielgruppe im Dezember": lbl(ALLTAG, a.alltag), "Größter Stolperstein oder Wunsch": a.pain, "Erster kleiner Schritt": a.ersterSchritt,
+    "Ergebnis-Versprechen (nach dem letzten Türchen …)": a.versprechen, "Gewählte Inhaltsarten": (a.inhalte || []).map(v => lbl(INHALTE, v)),
+    "Stärke der Kalender-Macherin": FORMATE[a.staerke] ? FORMATE[a.staerke].label : "", "Versand": lbl(VERSAND, a.versand),
+    "Kalender-Titel": a.titel || titleSuggestions()[0]
+  };
+}
+
+function doorInfo(d) {
+  return { n: d.n, datum: fmt(d.d) + (d.label ? " (" + d.label + ")" : ""), phase: d.phase, inhaltsart: d.content.label, format: d.format, thema: (state.doors[d.key] || "").trim() || undefined };
+}
+
+function applyAiDoor(d, r) {
+  state.ai[d.key] = { titel: r.titel, text: r.text, aufgabe: r.aufgabe, betreff: r.betreff, story: r.story };
+  if (!(state.doors[d.key] || "").trim()) {
+    state.doors[d.key] = r.titel;
+    const input = document.querySelector(`[data-door="${d.key}"]`);
+    if (input) input.value = r.titel;
+  }
+}
+
+function refreshAiDoor(d) {
+  const el = document.getElementById("ai-" + d.key);
+  if (el) { const open = el.open; el.outerHTML = aiDoorHtml(d); if (open) document.getElementById("ai-" + d.key).open = true; }
+}
+
+function setAiStatus(html) { const el = document.getElementById("ai-status"); if (el) el.innerHTML = html; }
+
+async function generateAll() {
+  if (aiBusy) return;
+  aiBusy = true;
+  const doors = buildDoors();
+  const todo = doors.filter(d => !state.ai[d.key]);
+  todo.forEach(d => aiLoading.add(d.key));
+  document.getElementById("ai-section").innerHTML = aiSectionHtml(doors);
+  let done = doors.length - todo.length, failed = null;
+  const progress = () => setAiStatus(`<div class="ai-progress"><span class="spinner" aria-hidden="true"></span> Die KI schreibt deine Türchen … <strong>${done} von ${doors.length}</strong> fertig</div><div class="bar"><i style="width:${Math.round(done / doors.length * 100)}%"></i></div>`);
+  try {
+    if (!state.aiPlan || state.aiPlan.length !== doors.length) {
+      setAiStatus(`<div class="ai-progress"><span class="spinner" aria-hidden="true"></span> Die KI plant die Themen für alle ${doors.length} Türchen …</div>`);
+      const plan = await api({ mode: "plan", profile: aiProfile(), doors: doors.map(doorInfo) });
+      state.aiPlan = plan.doors; save();
+      state.aiPlan.forEach(p => { const d = doors[p.n - 1]; if (d && !(state.doors[d.key] || "").trim()) { state.doors[d.key] = p.titel; const input = document.querySelector(`[data-door="${d.key}"]`); if (input) input.value = p.titel; } });
+    }
+    progress();
+    const batches = [];
+    for (let i = 0; i < todo.length; i += BATCH_SIZE) batches.push(todo.slice(i, i + BATCH_SIZE));
+    const worker = async () => {
+      while (batches.length && !failed) {
+        const batch = batches.shift();
+        try {
+          const res = await api({ mode: "doors", profile: aiProfile(), plan: state.aiPlan, doors: batch.map(doorInfo) });
+          (res.doors || []).forEach(r => { const d = batch.find(x => x.n === r.n); if (d) applyAiDoor(d, r); });
+          save();
+        } catch (e) { failed = e; }
+        batch.forEach(d => { aiLoading.delete(d.key); if (state.ai[d.key]) done++; refreshAiDoor(d); });
+        progress();
+      }
+    };
+    await Promise.all(Array.from({ length: PARALLEL }, worker));
+    if (failed) throw failed;
+    setAiStatus(`<div class="note ok"><strong>Fertig! 🎉</strong>Alle ${doors.length} Türchen sind geschrieben. Lies sie in Ruhe durch und passe sie an deine Sprache an – du kannst direkt in die Felder tippen.</div>`);
+  } catch (e) {
+    setAiStatus(`<div class="note warn"><strong>Das hat nicht ganz geklappt</strong>${esc(e.message)} Bereits fertige Türchen bleiben gespeichert. Klick einfach noch einmal auf „Fehlende Türchen erstellen“.</div>`);
+  } finally {
+    aiBusy = false;
+    aiLoading.clear();
+    buildDoors().forEach(refreshAiDoor);
+    const actions = document.getElementById("ai-actions");
+    if (actions) actions.outerHTML = aiActionsHtml(buildDoors());
+  }
+}
+
+async function regenerateDoor(key) {
+  const d = buildDoors().find(x => x.key === key);
+  if (!d || aiLoading.has(key)) return;
+  aiLoading.add(key); refreshAiDoor(d);
+  try {
+    const res = await api({ mode: "doors", profile: aiProfile(), plan: state.aiPlan || [], doors: [doorInfo(d)] });
+    const r = (res.doors || [])[0];
+    if (r) { applyAiDoor(d, r); save(); }
+  } catch (e) { toast(e.message); }
+  aiLoading.delete(key); refreshAiDoor(d);
+  const el = document.getElementById("ai-" + key); if (el) el.open = true;
+}
+
+function aiActionsHtml(doors) {
+  const count = doors.filter(d => state.ai[d.key]).length;
+  const all = count === doors.length;
+  return `<div class="actions ai-actions no-print" id="ai-actions" style="justify-content:flex-start">
+    ${all ? "" : `<button type="button" class="btn pink" data-nav="ai-all" ${aiBusy ? "disabled" : ""}>✨ ${count ? "Fehlende Türchen erstellen" : "Alle Türchen-Inhalte mit KI erstellen"}</button>`}
+    ${count ? `<button type="button" class="btn" data-nav="ai-copy-all">📋 Alle Inhalte kopieren</button>
+    <button type="button" class="btn ghost" data-nav="ai-csv">⬇️ Als Tabelle (CSV)</button>
+    <button type="button" class="btn ghost" data-nav="ai-reset" ${aiBusy ? "disabled" : ""}>↻ Alles neu erstellen</button>` : ""}
+  </div>`;
+}
+
+function aiSectionHtml(doors) {
+  const a = A();
+  const story = a.versand === "insta" ? "Story-Text" : "Mail-Text, Betreff, Mini-Aufgabe und Story-Text";
+  return `<h2>✨ Deine Türchen-Inhalte</h2>
+    <p>Die KI schreibt dir für jedes Türchen den kompletten Inhalt – ${story} – passend zu deinem Thema, deiner Zielgruppe und deinem Versprechen. Das dauert ein bis zwei Minuten. Danach kannst du alles direkt hier bearbeiten oder einzelne Türchen neu vorschlagen lassen.</p>
+    ${aiActionsHtml(doors)}
+    <div id="ai-status" aria-live="polite"></div>
+    <div class="ai-list">${doors.map(aiDoorHtml).join("")}</div>
+    <p class="ai-hint">Die Texte sind ein starker Entwurf, kein Endprodukt: Lies jedes Türchen einmal laut und ergänze deine eigenen Beispiele und Erfahrungen. Genau das macht deinen Kalender persönlich.</p>`;
+}
+
+function aiDoorHtml(d) {
+  const r = state.ai[d.key], loading = aiLoading.has(d.key);
+  const field = (f, label, rows) => `<div class="field"><label for="ai-${d.key}-${f}">${label}</label>${rows
+    ? `<textarea id="ai-${d.key}-${f}" data-ai="${d.key}|${f}" rows="${rows}">${esc(r[f])}</textarea>`
+    : `<input type="text" id="ai-${d.key}-${f}" data-ai="${d.key}|${f}" value="${esc(r[f])}">`}</div>`;
+  const status = loading ? '<span class="spinner" aria-hidden="true"></span> wird geschrieben …' : r ? "fertig" : "noch offen";
+  return `<details class="ai-door ${r ? "has" : ""}" id="ai-${d.key}">
+    <summary><span class="num">${d.n}</span><span class="sum-txt"><b>${esc(r ? r.titel : (state.doors[d.key] || "Türchen " + d.n))}</b><small>${fmt(d.d)} · ${d.content.label} · ${status}</small></span></summary>
+    <div class="ai-body">${r ? `
+      ${field("titel", "Überschrift")}
+      ${field("betreff", "E-Mail-Betreff")}
+      ${field("text", "Inhalt des Türchens", 8)}
+      ${field("aufgabe", "Mini-Aufgabe des Tages", 2)}
+      ${field("story", "Instagram-Story", 2)}
+      <div class="actions no-print" style="justify-content:flex-start;margin:4px 0 0">
+        <button type="button" class="btn small" data-nav="ai-copy-one" data-key="${d.key}">Kopieren</button>
+        <button type="button" class="btn small ghost" data-nav="ai-one" data-key="${d.key}" ${loading ? "disabled" : ""}>↻ Neu vorschlagen</button>
+      </div>` : `<p style="margin:0">${loading ? "Die KI schreibt gerade an diesem Türchen …" : "Noch kein Inhalt. Trag oben im Fahrplan gern ein Wunsch-Thema ein – die KI richtet sich danach."}</p>
+      ${loading ? "" : `<button type="button" class="btn small ghost no-print" data-nav="ai-one" data-key="${d.key}" style="margin-top:10px">✨ Nur dieses Türchen erstellen</button>`}`}
+    </div>
+  </details>`;
+}
+
+function aiDoorText(d) {
+  const r = state.ai[d.key];
+  if (!r) return "";
+  return `TÜRCHEN ${d.n} – ${fmt(d.d)}\nBetreff: ${r.betreff}\n\n${r.titel}\n\n${r.text}\n\nMini-Aufgabe: ${r.aufgabe}\n\nInstagram-Story: ${r.story}`;
+}
+function aiAllText() { return buildDoors().filter(d => state.ai[d.key]).map(aiDoorText).join("\n\n――――――――――\n\n"); }
+
+function downloadCsv() {
+  const q = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const rows = [["Türchen", "Datum", "Betreff", "Überschrift", "Inhalt", "Mini-Aufgabe", "Instagram-Story"]];
+  buildDoors().forEach(d => { const r = state.ai[d.key]; if (r) rows.push([d.n, iso(d.d), r.betreff, r.titel, r.text, r.aufgabe, r.story]); });
+  const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(";")).join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "adventskalender-tuerchen.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+window.addEventListener("beforeprint", () => document.querySelectorAll("details").forEach(d => { d.open = true; }));
+
 function render() {
-  if (ZUGANGSCODE && !state.unlocked) { renderGate(); return; }
+  if (ZUGANGSCODE_PFLICHT && !state.unlocked) { renderGate(); return; }
   renderStep();
 }
 function go(to) {
@@ -960,7 +1183,13 @@ $app.addEventListener("click", e => {
     case "next": if (canProceed(STEPS[state.step])) go(state.step + 1); break;
     case "back": go(state.step - 1); break;
     case "edit": go(1); break;
-    case "restart": if (confirm("Alle Antworten löschen und neu beginnen?")) { const u = state.unlocked; state = freshState(); state.unlocked = u; save(); go(0); } break;
+    case "restart": if (confirm("Alle Antworten löschen und neu beginnen?")) { const { unlocked, code } = state; state = freshState(); Object.assign(state, { unlocked, code }); save(); go(0); } break;
+    case "ai-all": generateAll(); break;
+    case "ai-reset": if (confirm("Alle KI-Inhalte löschen und komplett neu erstellen lassen?")) { state.ai = {}; state.aiPlan = null; save(); generateAll(); } break;
+    case "ai-one": regenerateDoor(ds.key); break;
+    case "ai-copy-one": copyText(aiDoorText(buildDoors().find(d => d.key === ds.key)), "Türchen kopiert ✓"); break;
+    case "ai-copy-all": copyText(aiAllText(), "Alle Türchen-Inhalte kopiert ✓"); break;
+    case "ai-csv": downloadCsv(); break;
     case "print": window.print(); break;
     case "copy": copyText(planAsText(), "Plan kopiert ✓"); break;
     case "caption": copyText(document.getElementById("caption").textContent, "Caption kopiert ✓"); break;
@@ -973,6 +1202,7 @@ $app.addEventListener("input", e => {
     if (el.dataset.live === "sugg") document.getElementById("sugg").innerHTML = suggHtml();
   }
   if (el.dataset.door) { state.doors[el.dataset.door] = el.value; save(); }
+  if (el.dataset.ai) { const [key, field] = el.dataset.ai.split("|"); if (state.ai[key]) { state.ai[key][field] = el.value; save(); } }
 });
 $app.addEventListener("change", e => {
   const el = e.target, a = A();

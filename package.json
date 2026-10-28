@@ -1,0 +1,11 @@
+{
+  "name": "your-help-adventskompass",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^6.0.3"
+  }
+}
