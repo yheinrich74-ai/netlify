@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adventskalender-Kompass | Your Help</title>
+<meta name="description" content="Das interaktive Quiz, mit dem du in ca. 20 Minuten deinen Business-Adventskalender planst: Ziel, Versprechen, Türchen-Fahrplan, Zeitplan und Social-Media-Promo.">
+<meta property="og:title" content="Adventskalender-Kompass | Your Help">
+<meta property="og:description" content="Plane deinen Business-Adventskalender Schritt für Schritt – mit persönlichem Türchen-Fahrplan und Promo-Plan.">
+<meta name="theme-color" content="#3b3028">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:ital,wght@0,300;0,400;0,600;1,400&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Your Help Farbwelt */
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --ink: #232018;
+    --ink-strong: #3b3028;
+    --muted: #6c5a58;
+    --taupe: #857370;
+    --pink: #ffb3fa;
+    --pink-soft: #ffe6fd;
+    --blush: #f3ddd9;
+    --line: #e7dedb;
+    --ok: #3f7d58;
+    --ok-soft: #e4f2e9;
+    --warn: #9a5b12;
+    --warn-soft: #fbefdc;
+    --radius: 18px;
+    --shadow: 0 10px 30px rgba(59, 48, 40, .08);
+    --font-head: "Oswald", "Arial Narrow", sans-serif;
+    --font-body: "Roboto Condensed", "Arial Narrow", sans-serif;
+    --font-script: "Mrs Saint Delafield", cursive;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.55;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(22vw, 260px);
+    background: var(--pink);
+    z-index: -1;
+  }
+  a { color: var(--ink-strong); }
+  h1, h2, h3 { font-family: var(--font-head); color: var(--ink-strong); line-height: 1.2; margin: 0 0 .5em; font-weight: 600; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); }
+  h2 { font-size: clamp(1.5rem, 3.6vw, 2.1rem); }
+  h3 { font-size: 1.25rem; font-weight: 500; }
+  p { margin: 0 0 1em; }
+  .script { font-family: var(--font-script); font-size: 2.6rem; line-height: 1; color: var(--ink-strong); font-weight: 400; }
+
+  /* Header */
+  .topbar { max-width: 1040px; margin: 0 auto; padding: 18px 16px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-mark { width: 42px; height: 42px; border-radius: 50%; background: var(--ink-strong); color: var(--pink); display: grid; place-items: center; font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; letter-spacing: .02em; }
+  .brand-name { font-family: var(--font-head); font-weight: 600; letter-spacing: .14em; font-size: .9rem; color: var(--ink-strong); text-transform: uppercase; }
+  .brand-name span { color: #c25cba; }
+  .topbar small { color: var(--muted); font-size: .9rem; }
+
+  main { max-width: 1040px; margin: 0 auto; padding: 16px 16px 64px; }
+  .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(22px, 4vw, 44px); max-width: 780px; margin: 0 auto; }
+  .card.wide { max-width: 1040px; }
+
+  /* Progress */
+  .progress { max-width: 780px; margin: 0 auto 14px; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); margin-bottom: 6px; gap: 10px; }
+  .progress-meta strong { font-family: var(--font-head); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-strong); }
+  .bar { height: 8px; background: #e9e2e0; border-radius: 99px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--taupe), var(--pink)); border-radius: 99px; transition: width .35s ease; }
+
+  .eyebrow { font-family: var(--font-head); text-transform: uppercase; letter-spacing: .16em; font-size: .8rem; color: var(--taupe); margin-bottom: .6em; display: block; }
+  .lead { font-size: 1.1rem; color: var(--ink); }
+
+  /* Options */
+  .options { display: grid; gap: 12px; margin: 22px 0 8px; }
+  .options.cols-2 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .opt {
+    display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%;
+    background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 14px 16px;
+    font: inherit; color: inherit; cursor: pointer; transition: border-color .15s, background .15s, transform .1s;
+  }
+  .opt:hover { border-color: var(--taupe); }
+  .opt:active { transform: scale(.995); }
+  .opt:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible, .tri button:focus-visible { outline: 3px solid var(--ink-strong); outline-offset: 2px; }
+  .opt[aria-pressed="true"] { border-color: var(--ink-strong); background: var(--pink-soft); }
+  .opt .ico { font-size: 1.5rem; line-height: 1.2; flex: none; }
+  .opt .txt { flex: 1; }
+  .opt .lbl { font-weight: 600; display: block; color: var(--ink-strong); }
+  .opt .desc { display: block; color: var(--muted); font-size: .95rem; }
+  .opt .tick { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: .8rem; color: transparent; margin-top: 2px; }
+  .opt.multi .tick { border-radius: 6px; }
+  .opt[aria-pressed="true"] .tick { background: var(--ink-strong); border-color: var(--ink-strong); color: #fff; }
+  .badge { display: inline-block; font-size: .75rem; font-family: var(--font-head); letter-spacing: .08em; text-transform: uppercase; background: var(--ink-strong); color: var(--pink); padding: 2px 8px; border-radius: 99px; margin-left: 6px; vertical-align: 2px; }
+
+  /* Fields */
+  .field { margin: 18px 0; }
+  .field label { display: block; font-weight: 600; color: var(--ink-strong); margin-bottom: 6px; }
+  .field .hint { display: block; font-size: .92rem; color: var(--muted); margin: -2px 0 6px; }
+  input[type="text"], textarea {
+    width: 100%; font: inherit; color: var(--ink); background: #fbf9f8; border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  }
+  textarea { min-height: 92px; resize: vertical; }
+  input[type="text"]:focus, textarea:focus { border-color: var(--taupe); background: #fff; outline: none; }
+
+  /* Info boxes */
+  .note { border-radius: 14px; padding: 16px 18px; margin: 20px 0; background: var(--blush); color: var(--ink); font-size: .98rem; }
+  .note strong:first-child { font-family: var(--font-head); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 4px; color: var(--ink-strong); font-size: .85rem; }
+  .note ul { margin: 6px 0 0; padding-left: 20px; }
+  .note.pink { background: var(--pink-soft); }
+  .note.ok { background: var(--ok-soft); }
+  .note.warn { background: var(--warn-soft); }
+
+  /* Knowledge check */
+  .opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+  .opt.wrong { border-color: #b4543e; background: #fbe7e2; }
+  .opt[disabled] { cursor: default; }
+
+  /* Tri-state */
+  .tri-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .tri-row:last-child { border-bottom: 0; }
+  .tri-row > span { flex: 1 1 260px; font-weight: 600; color: var(--ink-strong); }
+  .tri { display: inline-flex; border: 2px solid var(--line); border-radius: 99px; overflow: hidden; }
+  .tri button { font: inherit; font-size: .92rem; background: #fff; border: 0; padding: 8px 14px; cursor: pointer; color: var(--muted); }
+  .tri button + button { border-left: 2px solid var(--line); }
+  .tri button[aria-pressed="true"] { background: var(--ink-strong); color: #fff; }
+
+  /* Checkbox list */
+  .checks { list-style: none; padding: 0; margin: 12px 0; }
+  .checks li { margin: 8px 0; }
+  .checks label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .checks input { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--ink-strong); flex: none; }
+
+  /* Buttons / nav */
+  .nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .btn { font-family: var(--font-head); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; font-size: .95rem; border-radius: 99px; padding: 13px 26px; border: 2px solid var(--ink-strong); cursor: pointer; background: var(--ink-strong); color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .btn:hover { background: var(--ink); }
+  .btn.pink { background: var(--pink); color: var(--ink); border-color: var(--pink); }
+  .btn.pink:hover { background: #ff9ff7; }
+  .btn.ghost { background: transparent; color: var(--ink-strong); }
+  .btn.ghost:hover { background: var(--blush); }
+  .btn.small { padding: 8px 16px; font-size: .82rem; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .nav .help { font-size: .9rem; color: var(--muted); }
+
+  /* Intro */
+  .intro-grid { display: grid; gap: 28px; grid-template-columns: 1.2fr .8fr; align-items: center; }
+  .doors-deco { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .doors-deco span { aspect-ratio: 1; border-radius: 10px; background: var(--blush); display: grid; place-items: center; font-family: var(--font-head); color: var(--ink-strong); font-size: 1.1rem; }
+  .doors-deco span:nth-child(3n) { background: var(--pink); }
+  .doors-deco span:nth-child(4n+2) { background: var(--ink-strong); color: var(--pink); }
+  .bullets { list-style: none; padding: 0; margin: 18px 0; }
+  .bullets li { padding-left: 30px; position: relative; margin: 8px 0; }
+  .bullets li::before { content: "✓"; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--pink); color: var(--ink); display: grid; place-items: center; font-size: .8rem; font-weight: 700; top: 3px; }
+
+  /* Title suggestions */
+  .sugg { display: grid; gap: 10px; margin: 14px 0; }
+  .sugg button { text-align: left; font: inherit; background: #fbf9f8; border: 2px dashed var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; color: var(--ink-strong); }
+  .sugg button:hover { border-color: var(--taupe); background: var(--pink-soft); }
+
+  /* Result */
+  .result-hero { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; background: var(--ink-strong); color: #fff; border-radius: var(--radius); padding: clamp(22px, 4vw, 40px); margin-bottom: 22px; }
+  .result-hero h1, .result-hero h2 { color: #fff; }
+  .result-hero .eyebrow { color: var(--pink); }
+  .result-hero p { color: #f1e9e7; margin: 0; }
+  .score { width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; text-align: center; background: conic-gradient(var(--pink) calc(var(--p) * 1%), rgba(255,255,255,.15) 0); position: relative; }
+  .score::before { content: ""; position: absolute; inset: 12px; border-radius: 50%; background: var(--ink-strong); }
+  .score div { position: relative; }
+  .score b { font-family: var(--font-head); font-size: 2.1rem; display: block; line-height: 1; }
+  .score small { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--pink); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .section { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(20px, 3.4vw, 34px); margin-bottom: 22px; }
+  .section > h2 { display: flex; align-items: center; gap: 10px; }
+  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; margin: 0; }
+  .facts dt { font-family: var(--font-head); text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; color: var(--taupe); padding-top: 4px; }
+  .facts dd { margin: 0; color: var(--ink); }
+  .facts dd.big { font-family: var(--font-head); font-size: 1.3rem; color: var(--ink-strong); }
+  .tips { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .tips li { background: #fbf9f8; border-left: 4px solid var(--pink); padding: 10px 14px; border-radius: 0 10px 10px 0; }
+  .door-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .door { border: 2px solid var(--line); border-radius: 14px; padding: 12px; background: #fff; display: flex; flex-direction: column; gap: 6px; }
+  .door header { display: flex; align-items: center; gap: 10px; }
+  .door .num { width: 40px; height: 40px; border-radius: 10px; background: var(--blush); display: grid; place-items: center; font-family: var(--font-head); font-size: 1.15rem; color: var(--ink-strong); flex: none; }
+  .door.finale .num { background: var(--pink); }
+  .door.big .num { background: var(--ink-strong); color: var(--pink); }
+  .door .date { font-weight: 600; color: var(--ink-strong); line-height: 1.2; }
+  .door .phase { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--taupe); }
+  .door .meta { font-size: .92rem; color: var(--muted); }
+  .door input { font-size: .95rem; padding: 8px 10px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .9rem; color: var(--muted); margin-bottom: 14px; }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; }
+  .timeline { list-style: none; padding: 0; margin: 0; }
+  .timeline li { display: grid; grid-template-columns: 28px 120px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .timeline li:last-child { border-bottom: 0; }
+  .timeline input { width: 20px; height: 20px; accent-color: var(--ink-strong); margin-top: 3px; }
+  .timeline .when { font-family: var(--font-head); color: var(--ink-strong); font-size: .95rem; }
+  .timeline .when .now { display: inline-block; background: var(--pink); color: var(--ink); border-radius: 99px; padding: 0 8px; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+  .timeline li.done .what { text-decoration: line-through; color: var(--muted); }
+  .weeks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .week { background: #fbf9f8; border-radius: 14px; padding: 14px; border-top: 4px solid var(--taupe); }
+  .week:nth-child(2) { border-top-color: var(--blush); }
+  .week:nth-child(3) { border-top-color: var(--pink); }
+  .week:nth-child(4) { border-top-color: var(--ink-strong); }
+  .week h3 { margin-bottom: 2px; }
+  .week small { color: var(--muted); display: block; margin-bottom: 8px; }
+  .week ul { margin: 0; padding-left: 18px; font-size: .95rem; }
+  .channels { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px; }
+  .channel { border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .channel h3 { font-size: 1.05rem; margin-bottom: 4px; }
+  .channel ul { margin: 0; padding-left: 18px; font-size: .95rem; color: var(--ink); }
+  pre.caption { white-space: pre-wrap; font-family: var(--font-body); font-size: 1rem; background: #fbf9f8; border: 2px solid var(--line); border-radius: 14px; padding: 16px; margin: 12px 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 8px 0 22px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(120px); background: var(--ink-strong); color: #fff; padding: 12px 20px; border-radius: 99px; transition: transform .25s ease, opacity .25s ease; z-index: 10; font-size: .95rem; opacity: 0; visibility: hidden; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
+
+  footer.site { max-width: 1040px; margin: 0 auto; padding: 0 16px 40px; text-align: center; color: var(--muted); font-size: .88rem; }
+  footer.site .script { font-size: 2rem; display: block; }
+
+  @media (max-width: 760px) {
+    body { font-size: 17px; }
+    body::before { width: 14px; }
+    .intro-grid, .grid-2, .result-hero { grid-template-columns: 1fr; }
+    .doors-deco { max-width: 260px; }
+    .score { margin: 0 auto; }
+    .timeline li { grid-template-columns: 26px 1fr; }
+    .timeline li .what { grid-column: 2; }
+    .facts { grid-template-columns: 1fr; gap: 2px; }
+    .facts dd { margin-bottom: 10px; }
+    .nav .btn { flex: 1 1 auto; justify-content: center; }
+  }
+
+  @media print {
+    body { background: #fff; font-size: 12pt; }
+    body::before, .topbar, .progress, .no-print, footer.site, .toast { display: none !important; }
+    main { padding: 0; }
+    .section, .result-hero, .card { box-shadow: none; break-inside: avoid; border: 1px solid #ddd; }
+    .result-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .door { break-inside: avoid; }
+    .door input { border: 0; border-bottom: 1px dotted #999; border-radius: 0; background: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Your Help">
+      <span class="brand-mark" aria-hidden="true">YH</span>
+      <span class="brand-name">Your <span>Help</span></span>
+    </a>
+    <small>Adventskalender-Kompass</small>
+  </header>
+
+  <main id="app" aria-live="polite"></main>
+
+  <footer class="site">
+    <span class="script">Yvonne Heinrich</span>
+    Your Help · Online Business Management &amp; Backoffice für Coaches und Selbstständige<br>
+    Deine Antworten werden nur in deinem Browser gespeichert.
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =========================================================
+   KONFIGURATION
+   ZUGANGSCODE: leer lassen = frei zugänglich.
+   Mit Code (z. B. "ADVENT26") müssen Käufer:innen ihn einmalig
+   eingeben – den Code verschickst du in der Tentary-Bestätigungsmail.
+   ========================================================= */
+const ZUGANGSCODE = "";
+const STORAGE_KEY = "yh-adventskompass-v1";
+
+/* ---------- Inhalte ---------- */
+const ZIELE = [
+  { v: "leads", ico: "📬", label: "Neue Kontakte für meine E-Mail-Liste", desc: "Interessierte Menschen kennenlernen, die später zu Kund:innen werden können." },
+  { v: "sichtbarkeit", ico: "✨", label: "Sichtbarer werden & Reichweite aufbauen", desc: "Mehr Menschen sollen dich und deine Expertise entdecken." },
+  { v: "launch", ico: "🚀", label: "Ein Angebot vorbereiten (Launch)", desc: "Dein Kalender wärmt auf – im neuen Jahr öffnest du die Türen zu deinem Angebot." },
+  { v: "bindung", ico: "💛", label: "Bestehende Kund:innen beschenken", desc: "Danke sagen, Bindung stärken, Weiterempfehlungen fördern." },
+  { v: "umsatz", ico: "🛍️", label: "Direkt Umsatz machen", desc: "Angebote hinter den Türchen – passt vor allem zu Online-Shops und Produkten." }
+];
+
+const TYPEN = {
+  leads: { name: "Der Listen-Magnet", ico: "📬", text: "Dein Kalender ist ein Geschenk, das neue Menschen in deine Welt holt. Jedes Türchen zeigt: Hier bekomme ich echte Hilfe – und genau deshalb bleiben sie auch nach Weihnachten auf deiner Liste." },
+  sichtbarkeit: { name: "Der Sichtbarkeits-Booster", ico: "✨", text: "Dein Kalender macht dich im Dezember zum Gesprächsthema. Teilbare Türchen und Mitmach-Momente tragen deinen Namen weit über deine bisherige Community hinaus." },
+  launch: { name: "Der Launch-Wegbereiter", ico: "🚀", text: "Dein Kalender bereitet den Boden für dein Angebot: Er löst ein erstes Teilproblem, baut Vertrauen auf und macht Lust auf den nächsten großen Schritt im neuen Jahr." },
+  bindung: { name: "Das Herzens-Dankeschön", ico: "💛", text: "Dein Kalender sagt Danke. Er macht aus Kund:innen echte Fans – und Fans erzählen gern weiter, wie gut es sich mit dir arbeiten lässt." },
+  umsatz: { name: "Der Weihnachts-Shop-Kalender", ico: "🛍️", text: "Dein Kalender verbindet Vorfreude mit Angeboten. Wichtig: Jedes Türchen braucht trotzdem einen kleinen Mehrwert – sonst wirkt es schnell wie reine Werbung." }
+};
+
+const INHALTE = [
+  { v: "tipps", ico: "💡", label: "Tipps & Tricks", plural: "Tipps" },
+  { v: "uebungen", ico: "✅", label: "Mini-Aufgaben", plural: "Mini-Aufgaben" },
+  { v: "impulse", ico: "🌟", label: "Impulse & Motivation", plural: "Impulse" },
+  { v: "vorlagen", ico: "📋", label: "Checklisten & Vorlagen", plural: "Vorlagen" },
+  { v: "anleitungen", ico: "🧭", label: "Mini-Anleitungen & Rezepte", plural: "Mini-Anleitungen" },
+  { v: "quiz", ico: "🧩", label: "Rätsel & Quiz", plural: "Rätsel" },
+  { v: "story", ico: "📖", label: "Fortsetzungsgeschichte", plural: "Kapitel" },
+  { v: "einblicke", ico: "👀", label: "Persönliche Einblicke", plural: "Einblicke" },
+  { v: "gast", ico: "🤝", label: "Gast-Türchen von Business-Buddies", plural: "Experten-Impulse" },
+  { v: "angebote", ico: "🎁", label: "Spezial-Angebote", plural: "Überraschungen" }
+];
+
+const FORMATE = {
+  schreiben: { ico: "✍️", label: "Schreiben", desc: "E-Mails mit Text, gern ergänzt durch Bilder oder GIFs.", short: "Text-Mail" },
+  gestalten: { ico: "🎨", label: "Gestalten", desc: "Kurze Mails mit Downloads: Checklisten, Vorlagen, Rezeptkarten.", short: "Mail + Download" },
+  sprechen: { ico: "🎙️", label: "Sprechen", desc: "Kurze Mail + Audio, z. B. eine Mini-Folge oder Meditation.", short: "Mail + Audio" },
+  kamera: { ico: "🎬", label: "Vor der Kamera", desc: "Kurze Mail + Video, z. B. ein Tutorial oder ein Impuls.", short: "Mail + Video" }
+};
+
+const RHYTHMEN = {
+  taeglich: { ico: "📅", label: "Jeden Tag vom 1. bis 24. Dezember", desc: "Der Klassiker – maximal präsent, aber auch am meisten Arbeit." },
+  werktage: { ico: "💼", label: "Nur Montag bis Freitag", desc: "Ideal, wenn deine Zielgruppe am Wochenende abschaltet." },
+  sonntage: { ico: "🕯️", label: "Die 4 Adventssonntage + Nikolaus + Heiligabend", desc: "Wenig Aufwand, große Momente." },
+  mix: { ico: "🎁", label: "Mix: kleine Impulse werktags, größere am Wochenende", desc: "Abwechslungsreich und gut planbar." }
+};
+
+const TECHNIK = [
+  { k: "newsletterTool", label: "E-Mail-Marketing-Tool (z. B. Brevo, Kit, MailerLite, CleverReach)" },
+  { k: "landingpage", label: "Landingpage für deinen Kalender" },
+  { k: "doi", label: "Anmeldeformular mit Double-Opt-in" },
+  { k: "willkommensmail", label: "Willkommensmail für neue Anmeldungen" }
+];
+
+const KANAELE = [
+  { v: "instagram", ico: "📸", label: "Instagram", ideas: ["Reel mit Vorschau auf die ersten drei Türchen", "Story-Countdown-Sticker bis zum Start", "Link in Bio + Kommentar-Keyword (z. B. „ADVENT“)"] },
+  { v: "facebook", ico: "👥", label: "Facebook (Seite & Gruppen)", ideas: ["Beitrag mit klarer Nutzen-Aussage auf deiner Seite", "In passenden Gruppen – wo erlaubt – einen hilfreichen Tipp mit Hinweis teilen"] },
+  { v: "linkedin", ico: "💼", label: "LinkedIn", ideas: ["Persönlicher Post: Warum du diesen Kalender machst", "Karussell mit drei Türchen-Kostproben"] },
+  { v: "pinterest", ico: "📌", label: "Pinterest", ideas: ["3–5 Pins mit unterschiedlichen Titeln, alle auf deine Landingpage", "Früh veröffentlichen – Pinterest braucht Vorlauf"] },
+  { v: "tiktok", ico: "🎵", label: "TikTok", ideas: ["Kurzes „Das erwartet dich“-Video", "Countdown-Serie mit einem Mini-Tipp pro Tag"] },
+  { v: "youtube", ico: "▶️", label: "YouTube", ideas: ["Short mit einem Tipp aus dem Kalender", "Hinweis + Link in den Beschreibungen beliebter Videos"] },
+  { v: "newsletter", ico: "💌", label: "Bestehender Newsletter", ideas: ["Eigene Ankündigungs-Mail", "P.S.-Hinweis in jeder Mail bis zum Start"] },
+  { v: "blog", ico: "🎧", label: "Blog oder Podcast", ideas: ["Hinweis-Box in deinen meistgelesenen Artikeln", "Kurze Erwähnung in jeder Folge bis zum Start"] },
+  { v: "koop", ico: "🤝", label: "Kooperationen mit Business-Buddies", ideas: ["Gast-Türchen gegen gegenseitiges Teilen", "Gemeinsames Live zum Kalenderstart"] },
+  { v: "ads", ico: "📣", label: "Bezahlte Anzeigen (Meta Ads)", ideas: ["Kleines Budget für eine Anzeige auf die Landingpage", "Retargeting auf Menschen, die dein Profil schon kennen"] }
+];
+
+const ALLTAG = [
+  { v: "business", ico: "💼", label: "Selbstständig oder unternehmerisch unterwegs", desc: "Werktags gut erreichbar, am Wochenende eher offline." },
+  { v: "eltern", ico: "🧸", label: "Familienmensch mit vollem Kalender", desc: "Zwischen Krippenspiel und Plätzchen bleiben nur ein paar Minuten." },
+  { v: "berufstaetig", ico: "🚆", label: "Angestellt & viel unterwegs", desc: "Liest gern früh morgens, in der Pause oder in der Bahn." },
+  { v: "musse", ico: "☕", label: "Mit Zeit und Muße", desc: "Freut sich auf ausführlichere Inhalte – gerade am Wochenende." }
+];
+
+const ZEIT = [
+  { v: "wenig", ico: "⏳", label: "Unter 2 Stunden", desc: "Wir halten es schlank und machbar." },
+  { v: "mittel", ico: "🕰️", label: "2 bis 5 Stunden", desc: "Eine solide Basis für einen schönen Kalender." },
+  { v: "viel", ico: "🚀", label: "Mehr als 5 Stunden", desc: "Da geht richtig was." }
+];
+
+/* ---------- Schritte ---------- */
+const STEPS = [
+  { id: "intro", chapter: "Start", kind: "intro" },
+  {
+    id: "business", chapter: "Fundament", kind: "fields",
+    title: "Dein Fundament: Wofür stehst du?",
+    lead: "Bevor wir über Türchen sprechen, schauen wir auf dein Business. Dein Kalender soll nicht nur hübsch sein – er soll dich deinem Angebot näherbringen.",
+    fields: [
+      { key: "angebot", label: "Was bietest du an?", placeholder: "z. B. 1:1-Coaching für Selbstständige, Online-Kurs für Hobby-Fotograf:innen …" },
+      { key: "zielgruppe", label: "Für wen genau?", placeholder: "z. B. Solo-Selbstständige im ersten Jahr", single: true },
+      { key: "vorher", label: "Wo steht deine Wunschkundin heute?", placeholder: "z. B. verzettelt sich in To-dos und arbeitet abends noch" },
+      { key: "nachher", label: "Wo steht sie, wenn ihr zusammengearbeitet habt?", placeholder: "z. B. hat feste Abläufe und echten Feierabend" }
+    ],
+    note: { cls: "", title: "Warum das wichtig ist", html: "Klingt nach Hausaufgabe? Ist es ein bisschen. Aber genau hier entscheidet sich, ob dein Kalender Anmeldungen bringt – oder nur Arbeit. Je klarer dein Vorher → Nachher, desto leichter fällt dir jeder weitere Schritt." }
+  },
+  {
+    id: "ziel", chapter: "Ziel", kind: "single", key: "ziel", options: ZIELE,
+    title: "Was soll dein Adventskalender für dich bewirken?",
+    lead: "Wähle das Ziel, das dir am wichtigsten ist. Nebenziele kommen gleich.",
+    note: { cls: "pink", title: "Gut zu wissen", html: "Ein Kalender ohne klares Ziel ist ein nettes Extra – und frisst im Dezember trotzdem deine Energie. Mit Ziel wird er ein echter Baustein deiner Marketing-Strategie." }
+  },
+  {
+    id: "nebenziele", chapter: "Ziel", kind: "multi", key: "nebenziele", options: ZIELE, optional: true, excludeKey: "ziel",
+    title: "Gibt es Nebenziele?",
+    lead: "Optional – wähle alles, was zusätzlich schön wäre."
+  },
+  {
+    id: "alltag", chapter: "Zielgruppe", kind: "single", key: "alltag", options: ALLTAG,
+    title: "Wie sieht der Dezember deiner Wunschkundin aus?",
+    lead: "Ihr Alltag entscheidet, wann und wie lange sie deine Türchen öffnet."
+  },
+  {
+    id: "schmerz", chapter: "Zielgruppe", kind: "fields",
+    title: "Was beschäftigt sie gerade wirklich?",
+    lead: "Je näher du an ihren echten Gedanken bist, desto mehr Menschen fühlen sich angesprochen.",
+    pre: { cls: "pink", title: "Fragen, die dir helfen", html: "<ul><li>Welche Frage hörst du von ihr immer wieder?</li><li>Was schiebt sie seit Wochen vor sich her?</li><li>Worüber ärgert sie sich, wenn es mal wieder nicht klappt?</li><li>Was würde sie sofort ausprobieren, wenn es nur zehn Minuten dauert?</li></ul>" },
+    fields: [
+      { key: "pain", label: "Ihr größter Stolperstein oder Wunsch rund um dein Thema", placeholder: "z. B. Sie hat 1.000 Ideen, aber keinen Plan, womit sie anfangen soll." },
+      { key: "ersterSchritt", label: "Welcher erste kleine Schritt wäre für sie schon ein echter Gewinn?", placeholder: "z. B. Ihre drei wichtigsten Aufgaben für Januar stehen fest." }
+    ],
+    note: { cls: "", title: "Unsicher? Frag nach!", html: "Story-Umfrage, eine kurze Antwort-Mail im Newsletter, Kommentare unter Beiträgen in deiner Branche oder Rezensionen zu Büchern in deinem Thema verraten dir, was deine Zielgruppe umtreibt. KI-Tools liefern Ideen – die echten Worte deiner Zielgruppe ersetzen sie nicht." }
+  },
+  {
+    id: "q-groesse", chapter: "Versprechen", kind: "check",
+    title: "Kurzer Wissens-Check 🧠",
+    question: "Welches Problem eignet sich am besten für einen Adventskalender?",
+    options: [
+      { v: "a", label: "Das große Hauptproblem meiner Zielgruppe – komplett gelöst in 24 Tagen" },
+      { v: "b", label: "Ein klar umrissenes Teilproblem, das sich in kleinen Häppchen anpacken lässt" },
+      { v: "c", label: "Möglichst viele verschiedene Themen, damit für jede:n etwas dabei ist" }
+    ],
+    correct: "b",
+    explain: "Im Dezember hat niemand Kapazität für ein Mammutprojekt – und ein bunter Themenmix fühlt sich schnell beliebig an. Ein konkretes Teilproblem, das spürbar besser wird, macht deinen Kalender wertvoll und führt ganz natürlich zu deinem Angebot."
+  },
+  { id: "versprechen", chapter: "Versprechen", kind: "versprechen" },
+  {
+    id: "q-titel", chapter: "Versprechen", kind: "check",
+    title: "Wissens-Check: Was zieht mehr? 🧲",
+    question: "Welcher Kalender-Titel weckt mehr Lust auf eine Anmeldung?",
+    options: [
+      { v: "a", label: "„Mein Adventskalender mit Ordnungstipps“" },
+      { v: "b", label: "„24 Mini-Aufgaben: Bis Heiligabend ist deine Küche gästefertig“" }
+    ],
+    correct: "b",
+    explain: "Titel B verspricht ein greifbares Ergebnis mit klarem Zeitrahmen. Titel A beschreibt nur das Thema – und lässt offen, was man davon hat."
+  },
+  {
+    id: "inhalte", chapter: "Inhalt & Format", kind: "multi", key: "inhalte", options: INHALTE, min: 1,
+    title: "Was steckt hinter deinen Türchen?",
+    lead: "Wähle alle Inhaltsarten, die zu deinem Thema passen. Ein Mix hält die Neugier wach."
+  },
+  {
+    id: "staerke", chapter: "Inhalt & Format", kind: "single", key: "staerke",
+    options: Object.entries(FORMATE).map(([v, f]) => ({ v, ico: f.ico, label: f.label, desc: f.desc })),
+    title: "Womit fühlst du dich am wohlsten?",
+    lead: "Dein Kalender soll dir Freude machen – und dich nicht jeden Abend im Dezember an den Schreibtisch fesseln."
+  },
+  {
+    id: "zeit", chapter: "Inhalt & Format", kind: "single", key: "zeit", options: ZEIT,
+    title: "Wie viel Zeit hast du bis zum Start pro Woche?",
+    lead: "Ehrlich sein lohnt sich – wir planen deinen Kalender passend dazu."
+  },
+  {
+    id: "q-anzahl", chapter: "Rhythmus", kind: "check",
+    title: "Wissens-Check: Wie viele Türchen? 🔢",
+    question: "Wie viele Türchen muss ein Business-Adventskalender haben?",
+    options: [
+      { v: "a", label: "Genau 24 – sonst ist es kein richtiger Adventskalender" },
+      { v: "b", label: "So viele, wie zu mir und meiner Zielgruppe passen" }
+    ],
+    correct: "b",
+    explain: "Vier Adventssonntage, nur Werktage oder ein Mix aus kleinen und großen Türchen – alles ist erlaubt. Lieber weniger Türchen mit Herz als 24, die dich ausbrennen."
+  },
+  {
+    id: "rhythmus", chapter: "Rhythmus", kind: "single", key: "rhythmus",
+    options: Object.entries(RHYTHMEN).map(([v, r]) => ({ v, ico: r.ico, label: r.label, desc: r.desc })),
+    recommend: true,
+    title: "Wie oft öffnet sich ein Türchen?",
+    lead: "Denk an deinen Alltag UND den deiner Zielgruppe."
+  },
+  { id: "technik", chapter: "Technik & Sichtbarkeit", kind: "technik" },
+  {
+    id: "kanaele", chapter: "Technik & Sichtbarkeit", kind: "multi", key: "kanaele", options: KANAELE, min: 1,
+    title: "Wo zeigst du deinen Kalender?",
+    lead: "Wähle die Kanäle, die du schon nutzt oder nutzen möchtest. Daraus entsteht dein persönlicher Promo-Plan."
+  },
+  {
+    id: "q-promo", chapter: "Technik & Sichtbarkeit", kind: "check",
+    title: "Wissens-Check: Timing ⏰",
+    question: "Wann startest du am besten mit der Werbung für deinen Kalender?",
+    options: [
+      { v: "a", label: "Am 1. Dezember – wenn es losgeht" },
+      { v: "b", label: "Ein paar Tage vorher reicht" },
+      { v: "c", label: "Etwa 4 bis 6 Wochen vor dem ersten Türchen" }
+    ],
+    correct: "c",
+    explain: "Die meisten Menschen brauchen mehrere Berührungspunkte, bevor sie sich eintragen. Wer früh startet, sammelt schon im November Anmeldungen – und Türchen 1 landet bei einer gut gefüllten Liste."
+  },
+  { id: "titel", chapter: "Titel", kind: "titel" },
+  { id: "result", chapter: "Dein Plan", kind: "result" }
+];
+
+/* ---------- State ---------- */
+function freshState() { return { step: 0, a: { technik: {}, nebenziele: [], inhalte: [], kanaele: [], vcheck: [] }, checks: {}, doors: {}, todos: {}, unlocked: false }; }
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); if (s && s.a) return Object.assign(freshState(), s); } catch (e) {}
+  return null;
+}
+let state = load() || freshState();
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+/* ---------- Helpers ---------- */
+const $app = document.getElementById("app");
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const A = () => state.a;
+const firstName = () => (A().name || "").trim();
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2200); }
+
+const WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+const MO = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
+const fmt = d => `${WD[d.getDay()]}, ${d.getDate()}. ${MO[d.getMonth()]}`;
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+function today() { const t = new Date(); t.setHours(0, 0, 0, 0); return t; }
+function seasonYear() { const t = today(); return t > new Date(t.getFullYear(), 11, 24) ? t.getFullYear() + 1 : t.getFullYear(); }
+
+function recommendRhythm() {
+  const { zeit, alltag } = A();
+  if (zeit === "wenig") return "sonntage";
+  if (alltag === "business") return "werktage";
+  if (alltag === "eltern") return zeit === "viel" ? "taeglich" : "mix";
+  return zeit === "viel" ? "taeglich" : "mix";
+}
+
+function buildDoors() {
+  const y = seasonYear();
+  const r = A().rhythmus || recommendRhythm();
+  let dates = [];
+  if (r === "sonntage") {
+    const xmas = new Date(y, 11, 25);
+    const fourth = addDays(xmas, -(xmas.getDay() === 0 ? 7 : xmas.getDay()));
+    const set = new Map();
+    [-21, -14, -7, 0].forEach(o => { const d = addDays(fourth, o); set.set(iso(d), { d, label: `${4 + o / 7}. Advent` }); });
+    [[6, "Nikolaus"], [24, "Heiligabend"]].forEach(([day, label]) => { const d = new Date(y, 11, day); const k = iso(d); set.set(k, { d, label: set.has(k) ? set.get(k).label + " & " + label : label }); });
+    dates = [...set.values()].sort((p, q) => p.d - q.d);
+  } else {
+    for (let i = 1; i <= 24; i++) {
+      const d = new Date(y, 11, i);
+      const we = d.getDay() === 0 || d.getDay() === 6;
+      if (r === "werktage" && we) continue;
+      dates.push({ d, big: r === "mix" && we });
+    }
+  }
+  const a = A();
+  const goal = a.ziel || "leads";
+  let pool = (a.inhalte || []).filter(v => v !== "angebote" || goal === "umsatz");
+  if (!pool.length) pool = ["tipps"];
+  const base = FORMATE[a.staerke] ? FORMATE[a.staerke].short : "Text-Mail";
+  const n = dates.length;
+  const third = Math.max(1, Math.ceil((n - 1) / 3));
+  const finaleTxt = { leads: "Abschluss-Geschenk + Einladung zu deinem nächsten Schritt", sichtbarkeit: "Mitmach-Aktion zum Teilen & Danke", launch: "Ergebnis feiern + Einladung zu deinem Angebot / zur Warteliste", bindung: "Persönliches Dankeschön + kleine Überraschung", umsatz: "Großes Finale-Angebot" }[goal];
+  return dates.map((x, i) => {
+    let phase = i === n - 1 ? "Finale" : i < third ? "Ankommen & schnelle Erfolge" : i < 2 * third ? "Vertiefen" : "Umsetzen";
+    let content = INHALTE.find(c => c.v === pool[i % pool.length]);
+    let format = base;
+    if (r === "mix" && !x.big) format = "Kurz-Impuls (Text)";
+    if (a.zeit === "wenig" && (a.staerke === "kamera" || a.staerke === "sprechen") && i % 2 === 1) format = "Text-Mail";
+    return { n: i + 1, d: x.d, key: iso(x.d), label: x.label, big: !!x.big, finale: i === n - 1, phase, content: i === n - 1 ? { ico: "🎉", label: finaleTxt } : content, format };
+  });
+}
+
+function contentPlural() {
+  const first = (A().inhalte || []).find(v => v !== "angebote") || (A().inhalte || [])[0];
+  const c = INHALTE.find(x => x.v === first);
+  return c ? c.plural : "Impulse";
+}
+function shortGroup() { const a = A(); return (a.zgKurz || a.zielgruppe || "dich").trim(); }
+function shortResult() {
+  const a = A();
+  let r = (a.ergKurz || a.versprechen || "").trim().replace(/^[.…\s]+/, "").replace(/[.!]+$/, "");
+  return r || "dein Mini-Ergebnis";
+}
+function titleSuggestions() {
+  const n = buildDoors().length, art = contentPlural(), zg = shortGroup(), erg = shortResult();
+  return [
+    `${n} ${art} für ${zg} – ${erg}`,
+    `Dein Advents-Fahrplan: ${erg} in ${n} kleinen Schritten`,
+    `Der ${n}-Türchen-Kalender für ${zg}: ${erg}`,
+    `Bis Weihnachten: ${erg} – mit ${n} ${art}`
+  ];
+}
+
+function score() {
+  const a = A(); let s = 0;
+  ["angebot", "zielgruppe", "vorher", "nachher"].forEach(k => { if ((a[k] || "").trim()) s += 5; });
+  if (a.ziel) s += 10;
+  if ((a.versprechen || "").trim()) s += 13;
+  s += (a.vcheck || []).length * 4;
+  if ((a.inhalte || []).length) s += 5;
+  if (a.staerke) s += 5;
+  if (a.rhythmus) s += 5;
+  TECHNIK.forEach(t => { const v = (a.technik || {})[t.k]; if (v === "ja") s += 5; else if (v === "arbeit") s += 2; });
+  if ((a.kanaele || []).length) s += 10;
+  return Math.min(100, s);
+}
+
+/* ---------- Validation ---------- */
+function canProceed(step) {
+  const a = A();
+  switch (step.kind) {
+    case "single": return !!a[step.key];
+    case "multi": return step.optional || (a[step.key] || []).length >= (step.min || 1);
+    case "check": return !!state.checks[step.id];
+    default: return true;
+  }
+}
+function missingHint(step) {
+  if (step.kind === "single") return "Bitte wähle eine Antwort.";
+  if (step.kind === "multi") return "Bitte wähle mindestens eine Antwort.";
+  if (step.kind === "check") return "Wähle deine Antwort – du erfährst sofort, ob sie stimmt.";
+  return "";
+}
+
+/* ---------- Rendering ---------- */
+function noteHtml(n) { return n ? `<div class="note ${n.cls || ""}"><strong>${n.title}</strong>${n.html}</div>` : ""; }
+function optionHtml(o, pressed, multi, extra = "") {
+  return `<button type="button" class="opt ${multi ? "multi" : ""}" aria-pressed="${pressed}" ${extra}>
+    <span class="ico" aria-hidden="true">${o.ico || ""}</span>
+    <span class="txt"><span class="lbl">${o.label}${o.rec ? '<span class="badge">Empfehlung</span>' : ""}</span>${o.desc ? `<span class="desc">${o.desc}</span>` : ""}</span>
+    <span class="tick" aria-hidden="true">✓</span></button>`;
+}
+function progressHtml() {
+  const total = STEPS.length - 1;
+  const pct = Math.round((state.step / total) * 100);
+  return `<div class="progress no-print"><div class="progress-meta"><strong>${STEPS[state.step].chapter}</strong><span>Schritt ${state.step} von ${total - 1}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+}
+function navHtml(step) {
+  const ok = canProceed(step);
+  const isLast = STEPS[state.step + 1] && STEPS[state.step + 1].kind === "result";
+  return `<div class="nav no-print">
+    <button type="button" class="btn ghost" data-nav="back">← Zurück</button>
+    ${ok ? "" : `<span class="help">${missingHint(step)}</span>`}
+    <button type="button" class="btn ${isLast ? "pink" : ""}" data-nav="next" ${ok ? "" : "disabled"}>${isLast ? "Meinen Plan erstellen ✨" : "Weiter →"}</button>
+  </div>`;
+}
+
+function renderGate() {
+  $app.innerHTML = `<section class="card" style="max-width:520px;text-align:center">
+    <span class="eyebrow">Willkommen</span>
+    <h1>Dein Zugang</h1>
+    <p>Bitte gib den Zugangscode aus deiner Kaufbestätigung ein.</p>
+    <form id="gate"><div class="field"><label for="code" class="sr">Zugangscode</label><input type="text" id="code" autocomplete="off" placeholder="Zugangscode"></div>
+    <button class="btn pink" type="submit">Los geht's</button></form></section>`;
+  document.getElementById("gate").addEventListener("submit", e => {
+    e.preventDefault();
+    if (document.getElementById("code").value.trim().toUpperCase() === ZUGANGSCODE.toUpperCase()) { state.unlocked = true; save(); render(); }
+    else toast("Der Code passt leider nicht. Schau nochmal in deine Bestätigungsmail.");
+  });
+}
+
+function renderIntro() {
+  const hasProgress = state.a.ziel || state.a.angebot;
+  return `<section class="card wide"><div class="intro-grid"><div>
+    <span class="eyebrow">Your Help · Adventskalender-Kompass</span>
+    <h1>Von der Idee zum fertigen Plan für deinen Business-Adventskalender</h1>
+    <p class="lead">Ein Adventskalender ist eins der schönsten Marketing-Geschenke, die du deiner Community machen kannst – wenn er zu deinem Business passt und wirklich fertig wird. Genau dabei begleitet dich dieser Kompass.</p>
+    <ul class="bullets">
+      <li>In ca. 20 Minuten zu Ziel, Ergebnis-Versprechen und Titel</li>
+      <li>Dein persönlicher Türchen-Fahrplan mit echten Kalenderdaten</li>
+      <li>Zeitplan bis zum Start + Social-Media-Promo-Plan</li>
+      <li>Kleine Wissens-Checks, damit du typische Fehler vermeidest</li>
+    </ul>
+    <div class="field"><label for="f-name">Wie dürfen wir dich nennen? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+    <input type="text" id="f-name" data-field="name" value="${esc(A().name)}" placeholder="Dein Vorname"></div>
+    <div class="nav" style="justify-content:flex-start">
+      <button type="button" class="btn pink" data-nav="next">${hasProgress ? "Weitermachen →" : "Jetzt starten →"}</button>
+      ${hasProgress ? '<button type="button" class="btn ghost" data-nav="restart">Neu beginnen</button>' : ""}
+    </div>
+    </div>
+    <div aria-hidden="true"><div class="doors-deco">${Array.from({ length: 16 }, (_, i) => `<span>${[1, 6, 13, 24, 3, 9, 17, 20, 2, 11, 15, 22, 5, 8, 19, 24][i]}</span>`).join("")}</div>
+    <p class="script" style="margin-top:18px">Let's go!</p></div>
+  </div></section>`;
+}
+
+function renderFields(step) {
+  return `${step.pre ? noteHtml(step.pre) : ""}${step.fields.map(f => `<div class="field">
+      <label for="f-${f.key}">${f.label}</label>
+      ${f.single ? `<input type="text" id="f-${f.key}" data-field="${f.key}" value="${esc(A()[f.key])}" placeholder="${esc(f.placeholder)}">`
+                 : `<textarea id="f-${f.key}" data-field="${f.key}" placeholder="${esc(f.placeholder)}">${esc(A()[f.key])}</textarea>`}
+    </div>`).join("")}${noteHtml(step.note)}`;
+}
+
+function renderSingle(step) {
+  const rec = step.recommend ? recommendRhythm() : null;
+  return `<div class="options">${step.options.map(o => optionHtml({ ...o, rec: o.v === rec }, A()[step.key] === o.v, false, `data-single="${step.key}" data-v="${o.v}"`)).join("")}</div>
+    ${rec ? `<p class="help" style="color:var(--muted);font-size:.95rem">Unsere Empfehlung basiert auf deiner verfügbaren Zeit und dem Alltag deiner Zielgruppe – du entscheidest.</p>` : ""}${noteHtml(step.note)}`;
+}
+
+function renderMulti(step) {
+  const sel = A()[step.key] || [];
+  const opts = step.excludeKey ? step.options.filter(o => o.v !== A()[step.excludeKey]) : step.options;
+  return `<div class="options cols-2">${opts.map(o => optionHtml(o, sel.includes(o.v), true, `data-multi="${step.key}" data-v="${o.v}"`)).join("")}</div>${noteHtml(step.note)}`;
+}
+
+function renderCheck(step) {
+  const ans = state.checks[step.id];
+  return `<p class="lead"><strong>${step.question}</strong></p>
+    <div class="options">${step.options.map(o => {
+      let cls = "";
+      if (ans) cls = o.v === step.correct ? "correct" : o.v === ans ? "wrong" : "";
+      return `<button type="button" class="opt ${cls}" ${ans ? "disabled" : ""} data-check="${step.id}" data-v="${o.v}"><span class="txt"><span class="lbl">${o.label}</span></span>${ans && o.v === step.correct ? '<span aria-hidden="true">✅</span>' : ""}</button>`;
+    }).join("")}</div>
+    ${ans ? `<div class="note ${ans === step.correct ? "ok" : "warn"}"><strong>${ans === step.correct ? "Richtig! 🎉" : "Fast! Die richtige Antwort ist markiert."}</strong>${step.explain}</div>` : ""}`;
+}
+
+function renderVersprechen() {
+  const a = A(), vc = a.vcheck || [];
+  const items = [
+    ["konkret", "Es ist konkret – man kann sich das Ergebnis bildlich vorstellen."],
+    ["nutzen", "Es beschreibt, was sie davon hat – nicht, was ich gern erklären möchte."],
+    ["machbar", "Es ist in wenigen Wochen mit kleinen Schritten erreichbar."]
+  ];
+  return `<span class="eyebrow">Herzstück deines Kalenders</span>
+    <h2>Dein Ergebnis-Versprechen</h2>
+    <p class="lead">Stell dir vor: Das letzte Türchen ist geöffnet. Was hat sich für deine Teilnehmer:innen verändert?</p>
+    <div class="field"><label for="f-versprechen">Nach dem letzten Türchen …</label>
+      <span class="hint">Schreib es so, wie deine Wunschkundin es einer Freundin erzählen würde.</span>
+      <textarea id="f-versprechen" data-field="versprechen" placeholder="… haben meine Teilnehmer:innen eine Morgenroutine, die in 15 Minuten passt.">${esc(a.versprechen)}</textarea></div>
+    <p><strong>Versprechens-Check:</strong> Hake ab, was schon zutrifft.</p>
+    <ul class="checks">${items.map(([k, t]) => `<li><label><input type="checkbox" data-vcheck="${k}" ${vc.includes(k) ? "checked" : ""}> <span>${t}</span></label></li>`).join("")}</ul>
+    <div class="note pink"><strong>So wird's greifbar</strong>
+      ❌ „Mehr Klarheit im Business“ → ✅ „Deine drei Ziele für das neue Jahr stehen – auf einer einzigen Seite.“<br>
+      ❌ „Gesünder durch den Advent“ → ✅ „Du hast fünf Feierabend-Gerichte, die in 20 Minuten auf dem Tisch stehen.“<br><br>
+      Mehrere Ideen? Völlig okay – notiere sie alle. Beim Titel entscheidest du dich.</div>`;
+}
+
+function renderTechnik() {
+  const t = A().technik || {};
+  return `<span class="eyebrow">Technik-Check</span>
+    <h2>Was steht schon?</h2>
+    <p class="lead">Ohne E-Mail-Marketing-Tool geht es nicht – nur so laufen Anmeldung, Bestätigung und deine Türchen automatisch.</p>
+    <div>${TECHNIK.map(x => `<div class="tri-row"><span>${x.label}</span><div class="tri" role="group" aria-label="${esc(x.label)}">
+      ${[["ja", "Steht ✓"], ["arbeit", "In Arbeit"], ["nein", "Noch nicht"]].map(([v, l]) => `<button type="button" data-tech="${x.k}" data-v="${v}" aria-pressed="${t[x.k] === v}">${l}</button>`).join("")}
+    </div></div>`).join("")}</div>
+    <div class="note"><strong>Keine Sorge</strong>Alles, was noch fehlt, landet automatisch mit Datum in deinem Zeitplan.</div>`;
+}
+
+function renderTitel() {
+  const a = A();
+  return `<span class="eyebrow">Fast geschafft</span>
+    <h2>Dein Kalender-Titel</h2>
+    <p class="lead">Du hast jetzt alle Bausteine: Ziel, Versprechen, Inhalte, Format und Rhythmus. Bring sie in einem Titel zusammen, der sofort zeigt, was man davon hat.</p>
+    <div class="grid-2">
+      <div class="field"><label for="f-zgKurz">Zielgruppe in 2–4 Worten</label><input type="text" id="f-zgKurz" data-field="zgKurz" data-live="sugg" value="${esc(a.zgKurz != null ? a.zgKurz : a.zielgruppe || "")}" placeholder="z. B. Selbstständige Mamas"></div>
+      <div class="field"><label for="f-ergKurz">Mini-Ergebnis in Kurzform</label><input type="text" id="f-ergKurz" data-field="ergKurz" data-live="sugg" value="${esc(a.ergKurz != null ? a.ergKurz : "")}" placeholder="z. B. entspannt ins neue Jahr starten"></div>
+    </div>
+    <p><strong>Vorschläge zum Weiterdenken</strong> – tippe einen an und passe ihn an:</p>
+    <div class="sugg" id="sugg">${suggHtml()}</div>
+    <div class="field"><label for="f-titel">Dein (Arbeits-)Titel</label><input type="text" id="f-titel" data-field="titel" value="${esc(a.titel)}" placeholder="Dein Kalender-Titel"></div>
+    <div class="note pink"><strong>Titel-Formeln</strong>
+      <ul><li>„[Anzahl] [Inhaltsart] für [Zielgruppe] – [Mini-Ergebnis]“</li><li>„In [Anzahl] Türchen zu [Mini-Ergebnis] – ohne [typischer Stolperstein]“</li></ul></div>`;
+}
+function suggHtml() { return titleSuggestions().map(s => `<button type="button" data-title="${esc(s)}">${esc(s)}</button>`).join(""); }
+
+function renderStep() {
+  const step = STEPS[state.step];
+  if (step.kind === "intro") { $app.innerHTML = renderIntro(); return; }
+  if (step.kind === "result") { $app.innerHTML = renderResult(); return; }
+  let body = "";
+  if (step.kind === "fields" || step.kind === "single" || step.kind === "multi" || step.kind === "check") {
+    body = `<span class="eyebrow">${step.chapter}</span><h2>${step.title}</h2>${step.lead ? `<p class="lead">${step.lead}</p>` : ""}`;
+  }
+  body += ({ fields: renderFields, single: renderSingle, multi: renderMulti, check: renderCheck, versprechen: renderVersprechen, technik: renderTechnik, titel: renderTitel })[step.kind](step);
+  $app.innerHTML = progressHtml() + `<section class="card">${body}${navHtml(step)}</section>`;
+}
+
+/* ---------- Result ---------- */
+function buildTips(doors) {
+  const a = A(), t = [], r = a.rhythmus;
+  if (a.zeit === "wenig" && (r === "taeglich" || r === "mix")) t.push("⏳ Du hast wenig Zeit, aber einen dichten Rhythmus gewählt. Überleg, ob Adventssonntage oder Werktage reichen – oder bereite alle Inhalte bis Mitte November komplett vor.");
+  if (a.alltag === "business" && (r === "taeglich" || r === "mix")) t.push("💼 Deine Zielgruppe ist am Wochenende eher offline. Mach Samstag und Sonntag zu kurzen Bonus-Türchen oder setze nur auf Montag bis Freitag.");
+  if (a.alltag === "eltern") t.push("🧸 Halte jedes Türchen unter drei Minuten Lese-, Hör- oder Sehzeit. Eine klare Mini-Aufgabe pro Tag schlägt jeden langen Text.");
+  if (a.alltag === "berufstaetig") t.push("🚆 Verschicke deine Türchen früh morgens (ca. 6–7 Uhr) – perfekt für Kaffee oder Bahnfahrt. Audio funktioniert unterwegs besonders gut.");
+  if (a.alltag === "musse") t.push("☕ Deine Zielgruppe mag Tiefe: Gönn dir am Wochenende ausführlichere Inhalte oder ein kleines Live-Element.");
+  if (a.staerke === "kamera" && a.zeit !== "viel") t.push("🎬 Videos kosten Zeit. Nimm alle an ein bis zwei Tagen im Block auf – dein Plan wechselt bereits Video- und Text-Türchen ab.");
+  if (a.staerke === "gestalten") t.push("🎨 Erstelle ein Vorlagen-Design für alle Downloads (z. B. in Canva) – dann tauschst du pro Türchen nur noch den Inhalt.");
+  ({
+    leads: ["📬 Im letzten Türchen lädst du zu deinem nächsten Schritt ein – Erstgespräch, Warteliste oder Einstiegsangebot. Freundlich, nicht drängelnd.", "📨 Plane nach dem letzten Türchen eine kleine Follow-up-Mail, damit deine neuen Kontakte im Januar nicht „kalt“ werden."],
+    sichtbarkeit: ["✨ Mach Türchen teilbar: kleine Story-Grafiken, eine Mitmach-Aufgabe mit eigenem Hashtag oder ein „Leite das an eine Freundin weiter“."],
+    launch: ["🚀 Lass deine Türchen genau zu dem Problem führen, das dein Angebot löst. In der letzten Woche darfst du deine Warteliste erwähnen."],
+    bindung: ["💛 Mach es exklusiv: persönliche Ansprache, kleine Überraschungen, ein ehrliches Danke. In der letzten Woche passt eine Bitte um Feedback oder ein Testimonial."],
+    umsatz: ["🛍️ Tägliche Angebote funktionieren vor allem mit Produkten. Bei Dienstleistungen lieber Mehrwert-Türchen plus ein Angebot an ausgewählten Tagen."]
+  })[a.ziel || "leads"].forEach(x => t.push(x));
+  const tech = a.technik || {};
+  if (tech.newsletterTool !== "ja") t.push("🛠️ Ohne E-Mail-Marketing-Tool geht es nicht. Entscheide dich zuerst für ein Tool – erst dann lohnt sich Landingpage und Automation.");
+  if (tech.doi !== "ja") t.push("🔐 Denk an das Double-Opt-in: Es ist in Deutschland Pflicht für Newsletter-Anmeldungen und schützt deine Liste vor Fake-Adressen.");
+  if ((a.kanaele || []).includes("koop") || (a.inhalte || []).includes("gast")) t.push("🤝 Frag zwei bis drei Business-Buddies nach Gast-Türchen – sie teilen den Kalender dann auch mit ihrer Community.");
+  t.push("🌱 Fang klein an: Ein persönlicher Kalender mit Herz schlägt einen perfekten Kalender, der nie fertig wird. Ausbauen kannst du im nächsten Jahr.");
+  return t;
+}
+
+function buildTimeline(doors) {
+  const a = A(), tech = a.technik || {}, fd = doors[0].d, last = doors[doors.length - 1].d, mid = doors[Math.floor(doors.length / 2)].d;
+  return [
+    { id: "titel", d: addDays(fd, -45), what: "Titel und Ergebnis-Versprechen festlegen (✓ dank diesem Kompass)" },
+    { id: "themen", d: addDays(fd, -40), what: `Themen für alle ${doors.length} Türchen in Stichworten notieren (nutze den Fahrplan unten)` },
+    { id: "tool", d: addDays(fd, -38), what: "E-Mail-Marketing-Tool startklar machen", done: tech.newsletterTool === "ja" },
+    { id: "landing", d: addDays(fd, -36), what: "Landingpage mit Anmeldeformular und Double-Opt-in einrichten", done: tech.landingpage === "ja" && tech.doi === "ja" },
+    { id: "welcome", d: addDays(fd, -35), what: "Willkommensmail schreiben – die Türchen-Automation ergänzt du später", done: tech.willkommensmail === "ja" },
+    { id: "promo", d: addDays(fd, -35), what: "Bewerbung starten – Promo-Plan siehe unten" },
+    { id: "content1", d: addDays(fd, -14), what: "Erste Hälfte der Türchen fertig vorbereiten" },
+    { id: "auto", d: addDays(fd, -5), what: "Türchen-Automation einrichten und mit einer Testadresse komplett durchklicken" },
+    { id: "countdown", d: addDays(fd, -3), what: "Countdown-Posts & Erinnerungsmail: „Gleich geht's los!“" },
+    { id: "live", d: fd, what: "Türchen 1 öffnet sich 🎉 – feiere dich!" },
+    { id: "halbzeit", d: mid, what: "Halbzeit-Check: Öffnungsraten ansehen, Feedback sammeln" },
+    { id: "follow", d: addDays(last, 3), what: "Follow-up-Mail & Auswertung: neue Kontakte, Öffnungen, Klicks, Anfragen" }
+  ];
+}
+
+function buildCaption(doors) {
+  const a = A(), titel = a.titel || titleSuggestions()[0];
+  const start = fmt(doors[0].d).replace(/^\w+, /, "");
+  const pain = (a.pain || "").trim();
+  const fmtTxt = { schreiben: "als kurze E-Mail", gestalten: "mit einem kleinen Download", sprechen: "mit einem kurzen Audio", kamera: "mit einem kurzen Video" }[a.staerke] || "direkt per E-Mail";
+  return `🎄 ${titel}
+
+${pain ? `Kennst du das? ${pain}\n\n` : ""}Ab dem ${start} öffnet sich ${doors.length === 24 ? "jeden Tag" : "regelmäßig"} ein Türchen für dich – ${fmtTxt}, direkt in dein Postfach. Insgesamt ${doors.length} kleine Schritte bis Weihnachten.
+
+${(a.versprechen || "").trim() ? `Nach dem letzten Türchen ${a.versprechen.trim().replace(/^[.…\s]+/, "")}\n\n` : ""}✨ Kostenlos & in wenigen Minuten pro Tag
+👉 Melde dich über den Link in meiner Bio an – oder kommentiere „ADVENT“ und ich schicke ihn dir.
+
+#adventskalender #onlinebusiness #selbstständig`;
+}
+
+function renderResult() {
+  const a = A(), doors = buildDoors(), typ = TYPEN[a.ziel || "leads"], sc = score();
+  const name = firstName();
+  const titel = a.titel || titleSuggestions()[0];
+  const zielLabel = (ZIELE.find(z => z.v === a.ziel) || {}).label || "–";
+  const neben = (a.nebenziele || []).filter(v => v !== a.ziel).map(v => ZIELE.find(z => z.v === v).label);
+  const rec = recommendRhythm();
+  const rhythm = RHYTHMEN[a.rhythmus || rec];
+  const scoreLabel = sc >= 80 ? "Startklar!" : sc >= 50 ? "Fast startklar" : "Gute Basis";
+  const fd = doors[0].d, t0 = today();
+  const daysLeft = Math.round((fd - t0) / 864e5);
+  const timeline = buildTimeline(doors);
+  const chosen = KANAELE.filter(k => (a.kanaele || []).includes(k.v));
+  const weeks = [
+    { t: "Neugier wecken", tips: ["Thema anteasern: „Ich plane etwas für dich …“", "Umfrage zum Problem deiner Zielgruppe", "Landingpage-Link überall hinterlegen"] },
+    { t: "Nutzen zeigen", tips: ["Dein Ergebnis-Versprechen in den Mittelpunkt stellen", "Eine Kostprobe aus einem Türchen teilen", "Frage-Antwort-Post: „Für wen ist der Kalender?“"] },
+    { t: "Vertrauen aufbauen", tips: ["Persönliche Story: Warum dir das Thema am Herzen liegt", "Behind the Scenes beim Vorbereiten", "Stimmen & Feedback teilen (falls vorhanden)"] },
+    { t: "Countdown", tips: ["Tägliche Erinnerung in den Stories", "„Nur noch X Tage“ – letzte Chance zur Anmeldung", "Vorschau auf Türchen 1"] }
+  ];
+  return `
+  <section class="result-hero">
+    <div>
+      <span class="eyebrow">${name ? esc(name) + ", dein" : "Dein"} Adventskalender-Typ</span>
+      <h1>${typ.ico} ${typ.name}</h1>
+      <p>${typ.text}</p>
+    </div>
+    <div class="score" style="--p:${sc}" role="img" aria-label="Startklar-Score ${sc} von 100"><div><b>${sc}%</b><small>${scoreLabel}</small></div></div>
+  </section>
+
+  <div class="actions no-print">
+    <button type="button" class="btn pink" data-nav="print">🖨️ Plan als PDF speichern</button>
+    <button type="button" class="btn" data-nav="copy">📋 Plan kopieren</button>
+    <button type="button" class="btn ghost" data-nav="edit">✏️ Antworten bearbeiten</button>
+  </div>
+
+  <div class="grid-2">
+    <section class="section">
+      <h2>🗂️ Dein Kalender-Steckbrief</h2>
+      <dl class="facts">
+        <dt>Titel</dt><dd class="big">${esc(titel)}</dd>
+        <dt>Versprechen</dt><dd>${a.versprechen ? "Nach dem letzten Türchen " + esc(a.versprechen.replace(/^[.…\s]+/, "")) : "<em>Noch offen – trag es nach, es ist dein wichtigstes Verkaufsargument.</em>"}</dd>
+        <dt>Zielgruppe</dt><dd>${esc(a.zielgruppe || "–")}</dd>
+        <dt>Hauptziel</dt><dd>${zielLabel}${neben.length ? `<br><small style="color:var(--muted)">Nebenziele: ${neben.join(", ")}</small>` : ""}</dd>
+        <dt>Format</dt><dd>${FORMATE[a.staerke] ? FORMATE[a.staerke].ico + " " + FORMATE[a.staerke].short : "–"}</dd>
+        <dt>Rhythmus</dt><dd>${rhythm.ico} ${rhythm.label} · <strong>${doors.length} Türchen</strong>${a.rhythmus && a.rhythmus !== rec ? `<br><small style="color:var(--muted)">Unsere Empfehlung wäre: ${RHYTHMEN[rec].label}</small>` : ""}</dd>
+        <dt>Inhalte</dt><dd>${(a.inhalte || []).map(v => { const c = INHALTE.find(x => x.v === v); return c.ico + " " + c.label; }).join(" · ") || "–"}</dd>
+        <dt>Start</dt><dd>${fmt(fd)} ${daysLeft > 0 ? `· noch <strong>${daysLeft} Tage</strong>` : ""}</dd>
+      </dl>
+    </section>
+    <section class="section">
+      <h2>💡 Deine persönlichen Empfehlungen</h2>
+      <ul class="tips">${buildTips(doors).map(t => `<li>${t}</li>`).join("")}</ul>
+    </section>
+  </div>
+
+  <section class="section">
+    <h2>🎁 Dein Türchen-Fahrplan</h2>
+    <p>Notiere zu jedem Türchen ein Thema in wenigen Worten – das genügt erstmal, der Feinschliff kommt später. Deine Einträge werden automatisch gespeichert.</p>
+    <div class="legend"><span><i style="background:var(--blush)"></i>Türchen</span>${a.rhythmus === "mix" ? '<span><i style="background:var(--ink-strong)"></i>Großes Wochenend-Türchen</span>' : ""}<span><i style="background:var(--pink)"></i>Finale</span></div>
+    <div class="door-grid">${doors.map(d => `<article class="door ${d.finale ? "finale" : ""} ${d.big ? "big" : ""}">
+      <header><span class="num">${d.n}</span><div><div class="date">${fmt(d.d)}${d.label ? ` · ${d.label}` : ""}</div><div class="phase">${d.phase}</div></div></header>
+      <div class="meta">${d.content.ico} ${d.content.label}<br>📨 ${d.format}</div>
+      <input type="text" data-door="${d.key}" value="${esc(state.doors[d.key])}" placeholder="Thema für Türchen ${d.n}" aria-label="Thema für Türchen ${d.n}">
+    </article>`).join("")}</div>
+  </section>
+
+  <section class="section">
+    <h2>📆 Dein Zeitplan bis zum Start</h2>
+    <p>Hake ab, was erledigt ist. Termine, die schon vorbei sind, sind mit <strong>Jetzt</strong> markiert.</p>
+    <ul class="timeline">${timeline.map(x => {
+      const done = state.todos[x.id] != null ? state.todos[x.id] : !!x.done;
+      const past = x.d < t0 && x.id !== "follow" && x.id !== "halbzeit" && x.id !== "live";
+      return `<li class="${done ? "done" : ""}"><input type="checkbox" data-todo="${x.id}" ${done ? "checked" : ""} aria-label="${esc(x.what)} erledigt">
+        <span class="when">${past && !done ? '<span class="now">Jetzt</span>' : fmt(x.d)}</span><span class="what">${x.what}</span></li>`;
+    }).join("")}</ul>
+  </section>
+
+  <section class="section">
+    <h2>📣 Dein Social-Media-Promo-Plan</h2>
+    <p>Vier Wochen, vier Schwerpunkte – so baust du Vorfreude auf, ohne zu nerven.</p>
+    <div class="weeks">${weeks.map((w, i) => {
+      const s = addDays(fd, -28 + i * 7), e = addDays(s, 6);
+      return `<div class="week"><h3>Woche ${i + 1}: ${w.t}</h3><small>${fmt(s)} – ${fmt(e)}</small><ul>${w.tips.map(x => `<li>${x}</li>`).join("")}</ul></div>`;
+    }).join("")}</div>
+    ${chosen.length ? `<h3 style="margin-top:22px">Ideen für deine Kanäle</h3><div class="channels">${chosen.map(k => `<div class="channel"><h3>${k.ico} ${k.label}</h3><ul>${k.ideas.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("")}</div>` : ""}
+    <h3 style="margin-top:22px">Deine Caption-Vorlage</h3>
+    <p>Kopiere sie, passe sie an deine Sprache an – und los geht's.</p>
+    <pre class="caption" id="caption">${esc(buildCaption(doors))}</pre>
+    <button type="button" class="btn small no-print" data-nav="caption">Caption kopieren</button>
+  </section>
+
+  <section class="section" style="text-align:center">
+    <p class="script">Du schaffst das!</p>
+    <p>Dein Kalender muss nicht perfekt sein. Er lebt davon, dass er persönlich ist – und dass er wirklich bei deinen Menschen ankommt.</p>
+    <div class="actions no-print"><button type="button" class="btn ghost" data-nav="restart">Neuen Kalender planen</button></div>
+  </section>`;
+}
+
+function planAsText() {
+  const a = A(), doors = buildDoors(), typ = TYPEN[a.ziel || "leads"];
+  const lines = [
+    "MEIN ADVENTSKALENDER-PLAN (Your Help · Adventskalender-Kompass)", "",
+    `Typ: ${typ.name}`, `Titel: ${a.titel || titleSuggestions()[0]}`,
+    `Versprechen: Nach dem letzten Türchen ${(a.versprechen || "–").replace(/^[.…\s]+/, "")}`,
+    `Zielgruppe: ${a.zielgruppe || "–"}`, `Format: ${FORMATE[a.staerke] ? FORMATE[a.staerke].short : "–"}`,
+    `Rhythmus: ${RHYTHMEN[a.rhythmus || recommendRhythm()].label} (${doors.length} Türchen)`, "", "TÜRCHEN-FAHRPLAN"
+  ];
+  doors.forEach(d => lines.push(`${d.n}. ${fmt(d.d)} – ${d.content.label} – ${d.format}${state.doors[d.key] ? " – " + state.doors[d.key] : ""}`));
+  lines.push("", "ZEITPLAN");
+  buildTimeline(doors).forEach(x => lines.push(`[${(state.todos[x.id] != null ? state.todos[x.id] : x.done) ? "x" : " "}] ${fmt(x.d)} – ${x.what}`));
+  lines.push("", "EMPFEHLUNGEN");
+  buildTips(doors).forEach(t => lines.push("• " + t));
+  return lines.join("\n");
+}
+
+async function copyText(txt, msg) {
+  try { await navigator.clipboard.writeText(txt); toast(msg); }
+  catch (e) {
+    const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); toast(msg); } catch (err) { toast("Kopieren nicht möglich – bitte manuell markieren."); }
+    ta.remove();
+  }
+}
+
+function render() {
+  if (ZUGANGSCODE && !state.unlocked) { renderGate(); return; }
+  renderStep();
+}
+function go(to) {
+  state.step = Math.max(0, Math.min(STEPS.length - 1, to));
+  save(); render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  const h = $app.querySelector("h1, h2"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+}
+
+/* ---------- Events ---------- */
+$app.addEventListener("click", e => {
+  const el = e.target.closest("button");
+  if (!el) return;
+  const a = A(), ds = el.dataset;
+  if (ds.single) { a[ds.single] = ds.v; save(); renderStep(); return; }
+  if (ds.multi) { const arr = a[ds.multi] = a[ds.multi] || []; const i = arr.indexOf(ds.v); i > -1 ? arr.splice(i, 1) : arr.push(ds.v); save(); renderStep(); return; }
+  if (ds.check) { if (!state.checks[ds.check]) { state.checks[ds.check] = ds.v; save(); renderStep(); } return; }
+  if (ds.tech) { a.technik = a.technik || {}; a.technik[ds.tech] = ds.v; save(); renderStep(); return; }
+  if (ds.title) { a.titel = ds.title; save(); const f = document.getElementById("f-titel"); f.value = ds.title; f.focus(); return; }
+  switch (ds.nav) {
+    case "next": if (canProceed(STEPS[state.step])) go(state.step + 1); break;
+    case "back": go(state.step - 1); break;
+    case "edit": go(1); break;
+    case "restart": if (confirm("Alle Antworten löschen und neu beginnen?")) { const u = state.unlocked; state = freshState(); state.unlocked = u; save(); go(0); } break;
+    case "print": window.print(); break;
+    case "copy": copyText(planAsText(), "Plan kopiert ✓"); break;
+    case "caption": copyText(document.getElementById("caption").textContent, "Caption kopiert ✓"); break;
+  }
+});
+$app.addEventListener("input", e => {
+  const el = e.target, a = A();
+  if (el.dataset.field) {
+    a[el.dataset.field] = el.value; save();
+    if (el.dataset.live === "sugg") document.getElementById("sugg").innerHTML = suggHtml();
+  }
+  if (el.dataset.door) { state.doors[el.dataset.door] = el.value; save(); }
+});
+$app.addEventListener("change", e => {
+  const el = e.target, a = A();
+  if (el.dataset.vcheck) { const arr = a.vcheck = a.vcheck || []; const i = arr.indexOf(el.dataset.vcheck); el.checked ? (i < 0 && arr.push(el.dataset.vcheck)) : (i > -1 && arr.splice(i, 1)); save(); }
+  if (el.dataset.todo) { state.todos[el.dataset.todo] = el.checked; save(); el.closest("li").classList.toggle("done", el.checked); }
+});
+$app.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.matches('input[type="text"]') && e.target.closest(".card")) {
+    const next = $app.querySelector('[data-nav="next"]:not([disabled])'); if (next) { e.preventDefault(); next.click(); }
+  }
+});
+
+render();
+</script>
+</body>
+</html>
